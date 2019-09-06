@@ -64,7 +64,9 @@ function validateAction(req, res, next) {
   } else if (!req.body.description) {
     res.status(400).json({ message: "missing required description field" });
   } else if (req.body.description.length >= 128) {
-    res.status(400).json({ message: "description too long - enter up to 128 characters"})
+    res
+      .status(400)
+      .json({ message: "description too long - enter up to 128 characters" }).end();
   } else if (!req.body.notes) {
     res.status(400).json({ message: "missing required notes field" });
   } else if (
@@ -74,9 +76,10 @@ function validateAction(req, res, next) {
     res
       .status(400)
       .json({ message: "description and notes must be of type string" });
+  } else {
+    req.action = { ...req.body, project_id: req.params.id };
+    next();
   }
-  req.action = {...req.body, project_id: req.params.id}
-  next();
 }
 
 //// CRUD operations:
@@ -144,14 +147,15 @@ router.get("/:id/actions", validateId, (req, res) => {
 
 // post a new action to a project
 router.post("/:id/actions", validateId, validateAction, (req, res) => {
-  aModel.insert(req.action)
-  .then(response => {
-      res.status(201).json(response)
-  })
-  .catch(error => {
-      console.log(error)
-      res.status(500).json({message: "error adding action to database"})
-  })
+  aModel
+    .insert(req.action)
+    .then(response => {
+      res.status(201).json(response);
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(500).json({ message: "error adding action to database" });
+    });
 });
 
 module.exports = router;
