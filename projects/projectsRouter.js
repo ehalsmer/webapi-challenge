@@ -60,22 +60,22 @@ function validateProject(req, res, next) {
 
 function validateAction(req, res, next) {
   if (Object.keys(req.body).length == 0) {
-    res.status(400).json({ message: "missing required action data" });
+    res.status(400).json({ message: "missing required action data" }).end();
   } else if (!req.body.description) {
-    res.status(400).json({ message: "missing required description field" });
+    res.status(400).json({ message: "missing required description field" }).end();
   } else if (req.body.description.length >= 128) {
     res
       .status(400)
       .json({ message: "description too long - enter up to 128 characters" }).end();
   } else if (!req.body.notes) {
-    res.status(400).json({ message: "missing required notes field" });
+    res.status(400).json({ message: "missing required notes field" }).end();
   } else if (
     typeof req.body.description != "string" ||
     typeof req.body.notes != "string"
   ) {
     res
       .status(400)
-      .json({ message: "description and notes must be of type string" });
+      .json({ message: "description and notes must be of type string" }).end();
   } else {
     req.action = { ...req.body, project_id: req.params.id };
     next();
@@ -140,6 +140,8 @@ router.delete("/:id", validateId, (req, res) => {
     });
 });
 
+
+//// operations on actions that require a project ID:
 // get an array of a project's actions
 router.get("/:id/actions", validateId, (req, res) => {
   res.status(200).json(req.project.actions);
