@@ -4,6 +4,8 @@
 
 // put /:id edit action by id
 
+// delete /:id delete action by id
+
 const express = require("express");
 const router = express.Router();
 router.use(express.json());
@@ -82,6 +84,16 @@ router.put("/:id", validateId, validateAction, (req, res) => {
     .catch(error => {
         console.log(error)
         res.status(500).json({message: "error updating action"})
+    })
+})
+
+router.delete("/:id", validateId, (req, res) => {
+    aModel.remove(req.params.id)
+    .then(response => {
+        res.status(200).json({message: "action deleted"})
+    })
+    .catch(error => {
+        res.status(500).json({message: "error deleting action"})
     })
 })
 
